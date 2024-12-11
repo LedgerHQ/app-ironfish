@@ -98,8 +98,6 @@ typedef struct {
     uint8_t metadata[METADATA_LENGTH];
     public_address_t creator;
     uint8_t nonce;
-    /// The byte representation of a blake2s hash of the asset info
-    // uint8_t id[32];
 } asset_t;
 
 typedef struct {
@@ -140,6 +138,12 @@ typedef struct {
 } vec_mint_description_t;
 
 typedef struct {
+    uint8_t identifier[32];
+    uint8_t decimals;
+    const char *name;
+} asset_id_lookpup_t;
+
+typedef struct {
     transaction_version_e transactionVersion;
     int64_t fee;
     /// List of spends, or input notes, that have been destroyed.
@@ -171,6 +175,17 @@ typedef struct {
 
     // Not part of the incoming txn but it's used to compute signatures
     uint8_t transactionHash[32];
+
+    // Number of outputs with unknown asset ID
+    uint8_t n_raw_asset_id;
+
+    // Limiting the number of outputs that can be rendered to 64
+    uint64_t output_render_mask;
+    uint64_t output_raw_asset_id_mask;
+
+    // Number of outputs to be rendered
+    uint8_t n_rendered_outputs;
+
 } parser_tx_t;
 
 #ifdef __cplusplus

@@ -66,6 +66,7 @@ typedef enum {
     parser_unexpected_chain,
     parser_missing_field,
     paser_unknown_transaction,
+    parser_require_expert_mode,
 } parser_error_t;
 
 typedef struct {

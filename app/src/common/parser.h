@@ -38,6 +38,9 @@ parser_error_t parser_getNumItems(const parser_context_t *ctx, uint8_t *num_item
 parser_error_t parser_getItem(const parser_context_t *ctx, uint8_t displayIdx, char *outKey, uint16_t outKeyLen,
                               char *outVal, uint16_t outValLen, uint8_t pageIdx, uint8_t *pageCount);
 
+// checks outputs asset_id
+parser_error_t parser_check_outputs(parser_tx_t *tx_obj);
+
 #ifdef __cplusplus
 }
 #endif

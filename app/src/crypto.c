@@ -26,6 +26,7 @@
 #include "zxmacros.h"
 
 uint32_t hdPath[HDPATH_LEN_DEFAULT];
+uint8_t change_address[32];
 
 static zxerr_t computeKeys(keys_t *saplingKeys) {
     if (saplingKeys == NULL) {
@@ -177,5 +178,11 @@ zxerr_t crypto_fillKeys(uint8_t *buffer, uint16_t bufferLen, key_kind_e requeste
             return zxerr_out_of_bounds;
     }
 
+    return zxerr_ok;
+}
+
+zxerr_t crypto_get_change_address(void) {
+    MEMZERO(change_address, sizeof(change_address));
+    CHECK_ZXERR(crypto_generateSaplingKeys(change_address, sizeof(change_address), PublicAddress));
     return zxerr_ok;
 }

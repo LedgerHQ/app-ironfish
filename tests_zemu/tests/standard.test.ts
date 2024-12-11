@@ -15,7 +15,7 @@
  ******************************************************************************* */
 
 import Zemu, { ButtonKind, isTouchDevice, zondaxMainmenuNavigation } from '@zondax/zemu'
-import { PATH, defaultOptions, expectedKeys, models, tx_output_3 } from './common'
+import { PATH, defaultOptions, expectedKeys, models, tx_output_2_known, tx_output_3 } from './common'
 import IronfishApp, {
   IronfishKeys,
   KeyResponse,
@@ -148,11 +148,13 @@ describe('Standard', function () {
     }
   })
 
-  test.concurrent.each(models)('sign transaction', async function (m) {
+  test.concurrent.each(models)('sign transaction with unknown asset ', async function (m) {
     const sim = new Zemu(m.path)
     try {
       await sim.start({ ...defaultOptions, model: m.name })
       const app = new IronfishApp(sim.getTransport(), false)
+
+      await sim.toggleExpertMode()
 
       const txBlob = Buffer.from(tx_output_3, 'hex')
       const responsePublicAddress = await app.retrieveKeys(PATH, IronfishKeys.PublicAddress, false)
@@ -163,7 +165,61 @@ describe('Standard', function () {
 
       // Wait until we are not in the main menu
       await sim.waitUntilScreenIsNot(sim.getMainMenuSnapshot(), 200000)
-      await sim.compareSnapshotsAndApprove('.', `${m.prefix.toLowerCase()}-sign_3_out_tx`)
+      await sim.compareSnapshotsAndApprove('.', `${m.prefix.toLowerCase()}-sign_3_out_tx_unknown`)
+
+      const signatureResponse = (await signatureRequest) as ResponseSign
+      console.log(signatureResponse)
+
+      console.log(signatureResponse.signature.length)
+    } finally {
+      await sim.close()
+    }
+  })
+
+  test.concurrent.each(models)('sign transaction with known assets show all outputs', async function (m) {
+    const sim = new Zemu(m.path)
+    try {
+      await sim.start({ ...defaultOptions, model: m.name })
+      const app = new IronfishApp(sim.getTransport(), false)
+
+      await sim.toggleExpertMode()
+
+      const txBlob = Buffer.from(tx_output_2_known, 'hex')
+      const responsePublicAddress = await app.retrieveKeys(PATH, IronfishKeys.PublicAddress, false)
+      console.log(responsePublicAddress)
+
+      // do not wait here.. we need to navigate
+      const signatureRequest = app.sign(PATH, txBlob)
+
+      // Wait until we are not in the main menu
+      await sim.waitUntilScreenIsNot(sim.getMainMenuSnapshot(), 200000)
+      await sim.compareSnapshotsAndApprove('.', `${m.prefix.toLowerCase()}-sign_2_out_tx_known`)
+
+      const signatureResponse = (await signatureRequest) as ResponseSign
+      console.log(signatureResponse)
+
+      console.log(signatureResponse.signature.length)
+    } finally {
+      await sim.close()
+    }
+  })
+
+  test.concurrent.each(models)('sign transaction with known assets hide change output', async function (m) {
+    const sim = new Zemu(m.path)
+    try {
+      await sim.start({ ...defaultOptions, model: m.name })
+      const app = new IronfishApp(sim.getTransport(), false)
+
+      const txBlob = Buffer.from(tx_output_2_known, 'hex')
+      const responsePublicAddress = await app.retrieveKeys(PATH, IronfishKeys.PublicAddress, false)
+      console.log(responsePublicAddress)
+
+      // do not wait here.. we need to navigate
+      const signatureRequest = app.sign(PATH, txBlob)
+
+      // Wait until we are not in the main menu
+      await sim.waitUntilScreenIsNot(sim.getMainMenuSnapshot(), 200000)
+      await sim.compareSnapshotsAndApprove('.', `${m.prefix.toLowerCase()}-sign_2_out_tx_known_hide_change`)
 
       const signatureResponse = (await signatureRequest) as ResponseSign
       console.log(signatureResponse)

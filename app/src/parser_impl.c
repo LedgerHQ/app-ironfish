@@ -112,6 +112,11 @@ parser_error_t _read(parser_context_t *ctx, parser_tx_t *v) {
     CHECK_ERROR(readTransactionVersion(ctx, &v->transactionVersion));
     CHECK_ERROR(readUint64(ctx, &v->spends.elements));
     CHECK_ERROR(readUint64(ctx, &v->outputs.elements));
+    // Check number of outputs is <= than the number of supported outputs in the render mask
+    if (v->outputs.elements > 64) {
+        return parser_unexpected_number_items;
+    }
+
     CHECK_ERROR(readUint64(ctx, &v->mints.elements));
     CHECK_ERROR(readUint64(ctx, &v->burns.elements));
     CHECK_ERROR(readInt64(ctx, &v->fee));

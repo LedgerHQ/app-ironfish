@@ -101,6 +101,8 @@ void check_testcase(const testcase_t &tc, bool expert_mode) {
     err = parser_parse(&ctx, buffer, bufferLen, &tx_obj);
     ASSERT_EQ(err, parser_ok) << parser_getErrorDescription(err);
 
+    err = parser_check_outputs(&tx_obj);
+    ASSERT_EQ(err, parser_ok) << parser_getErrorDescription(err);
     auto output = dumpUI(&ctx, 39, 39);
 
     std::cout << std::endl;
@@ -125,4 +127,8 @@ INSTANTIATE_TEST_SUITE_P
      JsonTestsA::PrintToStringParamName());
 TEST_P(JsonTestsA, CheckUIOutput_CurrentTX_Expert) {
     check_testcase(GetParam(), true);
+}
+
+TEST_P(JsonTestsA, CheckUIOutput_CurrentTX_Normal) {
+    check_testcase(GetParam(), false);
 }
