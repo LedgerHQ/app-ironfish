@@ -71,3 +71,13 @@ __Z_INLINE void app_reply_error() {
     set_code(G_io_apdu_buffer, 0, APDU_CODE_DATA_INVALID);
     io_exchange(CHANNEL_APDU | IO_RETURN_AFTER_TX, 2);
 }
+
+__Z_INLINE zxerr_t app_get_address() {
+    zxerr_t err = crypto_get_change_address();
+
+    if (err != zxerr_ok) {
+        THROW(APDU_CODE_EXECUTION_ERROR);
+    }
+
+    return zxerr_ok;
+}

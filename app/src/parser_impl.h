@@ -25,7 +25,7 @@
 extern "C" {
 #endif
 
-#define ELEMENTS_PER_OUTPUT   3
+#define ELEMENTS_PER_OUTPUT   2
 #define OUTPUT_ELEMENT_OFFSET 1
 /**
  * @brief Checks that there are at least SIZE bytes available in the buffer.

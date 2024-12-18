@@ -19,9 +19,9 @@
 
 #include "coin.h"
 #include "keys_personalizations.h"
+#include "parser_common.h"
 #include "rslib.h"
 #include "zxformat.h"
-#include "parser_common.h"
 
 #if defined(LEDGER_SPECIFIC)
 #include "cx.h"
@@ -129,7 +129,7 @@ parser_error_t transaction_signature_hash(parser_tx_t *txObj, uint8_t output[HAS
     const uint16_t MINTLEN = 32 + 192 + 193 + 8;
     uint16_t tmpOffset = 0;
     for (uint64_t i = 0; i < txObj->mints.elements; i++) {
-        const uint8_t *mint_i = txObj->mints.data.ptr + tmpOffset;  // + 32;
+        const uint8_t *mint_i = txObj->mints.data.ptr + tmpOffset;
         const int8_t transferOwnershipToLen = txObj->transactionVersion == V1 ? (-32) : mint_i[MINTLEN] == 1 ? 33 : 1;
         const uint16_t tmpMintLen = MINTLEN + transferOwnershipToLen + 64;
 
@@ -247,7 +247,7 @@ parser_error_t crypto_decrypt_merkle_note(parser_tx_t *txObj, const uint8_t *m_n
     uint8_t plain_text[ENCRYPTED_NOTE_SIZE] = {0};
     const uint8_t *ephemeral_public_key = m_note + VALUE_COMMITMENT_SIZE + NOTE_COMMITMENT_SIZE;
     if (decrypt_note(m_note, note_encryption_key + PUBLIC_ADDRESS_SIZE, note_encryption_key, ephemeral_public_key,
-                             plain_text) != parser_ok) {
+                     plain_text) != parser_ok) {
         MEMZERO(note_encryption_key, sizeof(note_encryption_key));
         MEMZERO(plain_text, sizeof(plain_text));
         return parser_unexpected_error;
