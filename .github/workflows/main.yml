@@ -28,9 +28,10 @@ jobs:
             libssl-dev libffi-dev libreadline-dev zlib1g-dev libbz2-dev libsqlite3-dev libncurses5-dev \
             libgdbm-dev libnss3-dev liblzma-dev libxml2-dev libxmlsec1-dev libffi-dev libyaml-dev
       - name: Install rust
-        uses: actions-rs/toolchain@v1
+        uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           toolchain: stable
+          components: rust-src
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -40,6 +41,8 @@ jobs:
           wget https://github.com/Kitware/CMake/releases/download/v3.28.0/cmake-3.28.0-linux-x86_64.sh
           sudo mkdir /opt/cmake
           sudo sh cmake-3.28.0-linux-x86_64.sh --skip-license --prefix=/opt/cmake
+          sudo rm /usr/local/bin/cmake || true
+          sudo rm /usr/local/bin/ctest || true 
           sudo ln -s /opt/cmake/bin/cmake /usr/local/bin/cmake
           sudo ln -s /opt/cmake/bin/ctest /usr/local/bin/ctest
       - name: Verify CMake version
@@ -56,8 +59,7 @@ jobs:
     needs: configure
     runs-on: ${{ github.repository_owner == 'zondax' && 'zondax-runners' || 'ubuntu-latest' }}
     container:
-      image: zondax/ledger-app-builder:latest
-      options: --user ${{ needs.configure.outputs.uid_gid }}
+      image: ghcr.io/ledgerhq/ledger-app-builder/ledger-app-builder:latest
       env:
         BOLOS_SDK: /opt/nanos-secure-sdk
     outputs:
@@ -69,7 +71,6 @@ jobs:
           submodules: true
       - name: Build Standard app
         id: build
-        shell: bash -l {0}
         run: |
           make
           echo "size=$(python3 deps/ledger-zxlib/scripts/getSize.py s)" >> $GITHUB_OUTPUT
@@ -104,9 +105,10 @@ jobs:
           submodules: true
       - run: sudo apt-get update -y && sudo apt-get install -y libusb-1.0.0 libudev-dev
       - name: Install rust
-        uses: actions-rs/toolchain@v1
+        uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           toolchain: stable
+          components: rust-src
       - name: Install node
         uses: actions/setup-node@v4
         with:
@@ -119,7 +121,7 @@ jobs:
           make test_all
       - name: Upload Snapshots (only failure)
         if: ${{ failure() }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: snapshots-tmp
           path: tests_zemu/snapshots-tmp/

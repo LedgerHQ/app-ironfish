@@ -185,11 +185,11 @@ set(RUST_TARGET_DIR "${RUST_LIB_DIR}/target/${RUST_TARGET_TRIPLE}/debug")
 
 # Custom target for the Rust library
 add_custom_target(RustLibClean
-    COMMAND cargo clean
+    COMMAND RUSTC_BOOTSTRAP=1 cargo clean
     WORKING_DIRECTORY ${RUST_LIB_DIR}
 )
 add_custom_target(RustLibBuild
-    COMMAND cargo build --target ${RUST_TARGET_TRIPLE} --features cpp_tests
+    COMMAND RUSTC_BOOTSTRAP=1 cargo build --target ${RUST_TARGET_TRIPLE} --features cpp_tests
     WORKING_DIRECTORY ${RUST_LIB_DIR}
     DEPENDS RustLibClean
 )
