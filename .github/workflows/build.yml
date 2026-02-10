@@ -1,4 +1,4 @@
-name: Lint
+name: Build
 
 on:
   workflow_dispatch:
@@ -10,7 +10,7 @@ on:
   pull_request:
 
 jobs:
-  lint:
-    name: Lint Checks
-    uses: LedgerHQ/ledger-app-workflows/.github/workflows/reusable_lint.yml@v1
+  build:
+    name: Build Application
+    uses: LedgerHQ/ledger-app-workflows/.github/workflows/reusable_build.yml@v1
     secrets: inherit
